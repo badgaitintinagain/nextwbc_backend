@@ -16,12 +16,11 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:3000",  # Development URL
-        "https://nextwbc.vercel.app",  # Production URL
-        "https://nextwbc-assembly.vercel.app",  # Alternative production URL
-        os.getenv("FRONTEND_URL", "https://nextwbc.vercel.app")  # Environment variable
+        "https://nextwbc-assembly.vercel.app",  # Production URL on Vercel
+        os.getenv("FRONTEND_URL", "https://nextwbc-assembly.vercel.app")  # Environment variable
     ],
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allow_headers=["*"],
 )
 
