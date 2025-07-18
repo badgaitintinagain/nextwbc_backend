@@ -8,6 +8,7 @@ import numpy as np
 import base64
 import os
 from typing import List
+import psutil
 
 app = FastAPI()
 
@@ -24,23 +25,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Load YOLO model from Hugging Face
-def load_model_from_hf():
-    # ระบุ repo_id ของคุณบน Hugging Face และชื่อไฟล์โมเดล
-    repo_id = "badgaitintin/WBCYOLO_12s_01"  # แก้ไขเป็น repo_id ของคุณ
-    filename = "tune_best_1733.pt"  # แก้ไขเป็นชื่อไฟล์โมเดลของคุณบน Hugging Face
-    
-    # ดาวน์โหลดโมเดลจาก Hugging Face (จะ cache ไว้ในเครื่อง)
-    model_path = hf_hub_download(repo_id=repo_id, filename=filename)
-    
-    # โหลดโมเดลด้วย YOLO
-    return YOLO(model_path)
+def print_ram_usage(context=""):
+    process = psutil.Process(os.getpid())
+    print(f"[RAM LOG] {context} RAM used (MB):", process.memory_info().rss / 1024 / 1024)
 
-# วิธีที่ 2: โหลดโมเดลโดยตรงผ่าน URL (ไม่ต้องดาวน์โหลดไฟล์)
-# model = YOLO("https://huggingface.co/your-username/nextwbc-model/resolve/main/last.pt")
-
-# โหลดโมเดล
-model = load_model_from_hf()
+# Load YOLO model from local file for Lambda
+model = YOLO("cv334.pt")
+print_ram_usage("After loading YOLO model")
 
 @app.get("/")
 async def root():
@@ -52,12 +43,15 @@ async def health_check():
 
 @app.post("/predict/")
 async def predict_image(file: UploadFile = File(...)):
+    print_ram_usage("Before reading image")
     # Read and process the image
     contents = await file.read()
     image = Image.open(io.BytesIO(contents))
+    print_ram_usage("After loading image")
     
     # Run inference
     results = model(image)
+    print_ram_usage("After inference")
     
     # Process results
     result = results[0]
