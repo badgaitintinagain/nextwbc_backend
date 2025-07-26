@@ -30,7 +30,7 @@ def print_ram_usage(context=""):
     print(f"[RAM LOG] {context} RAM used (MB):", process.memory_info().rss / 1024 / 1024)
 
 # Load YOLO model from local file for Lambda
-model = YOLO("cv334.pt")
+model = YOLO("tune_best_1733.pt")
 print_ram_usage("After loading YOLO model")
 
 @app.get("/")
