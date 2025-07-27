@@ -18,6 +18,7 @@ app.add_middleware(
     allow_origins=[
         "http://localhost:3000",  # Development URL
         "https://nextwbc-assembly.vercel.app",  # Production URL on Vercel
+        "https://nextwbc.vercel.app",  # Additional Vercel URL
         os.getenv("FRONTEND_URL", "https://nextwbc-assembly.vercel.app")  # Environment variable
     ],
     allow_credentials=True,
